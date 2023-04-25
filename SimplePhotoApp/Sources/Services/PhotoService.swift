@@ -8,14 +8,6 @@
 import UIKit
 import Photos
 
-/*
- Photos 프레임워크
- - PHAsset: 사진 라이브러리에 있는 이미지, 비디오와 같은 하나의 애셋을 의미
- - PHAssetCollection: PHAsset의 컬렉션
- - PHCachingImageManager: 요청한 크기에 맞게 이미지를 로드하여 캐싱까지 수행
- - PHFetchResult: 앨범 하나
- */
-
 enum MediaType {
   case all
   case image
@@ -28,8 +20,6 @@ final class PhotoService: NSObject {
   
   override private init() {
     super.init()
-    // PHPhotoLibraryChangeObserver 델리게이트
-    // PHPhotoLibrary: 변경사항을 알려 데이터 리프레시에 사용
     PHPhotoLibrary.shared().register(self)
   }
   
@@ -85,49 +75,35 @@ final class PhotoService: NSObject {
       completion(allAlbums)
     }
     
-    // PHFetchOptions: predicate를 이용하여 sorting, mediaType 등을 쿼리하는데 사용
-    let fetchOptions = PHFetchOptions()
-    fetchOptions.predicate = Const.predicate(mediaType)
-    let standardAlbum = PHAsset.fetchAssets(with: fetchOptions)
-    allAlbums.append(
-      .init(
-        id: nil,
-        name: Const.titleText(mediaType),
-        count: standardAlbum.count,
-        album: standardAlbum
-      )
-    )
-    
-    let smartAlbums = PHAssetCollection.fetchAssetCollections(
-      with: .smartAlbum,
-      subtype: .any,
-      options: PHFetchOptions()
-    )
-    guard 0 < smartAlbums.count else { return }
-    smartAlbums.enumerateObjects { smartAlbum, index, pointer in
-      guard index <= smartAlbums.count - 1 else {
-        pointer.pointee = true
-        return
-      }
-      if smartAlbum.estimatedAssetCount == NSNotFound {
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.predicate = Const.predicate(mediaType)
-        fetchOptions.sortDescriptors = Const.sortDescriptors
-        let smartAlbums = PHAsset.fetchAssets(in: smartAlbum, options: fetchOptions)
-        allAlbums.append(
-          .init(
-            id: smartAlbum.localIdentifier,
-            name: smartAlbum.localizedTitle ?? Const.titleText(nil),
-            count: smartAlbums.count,
-            album: smartAlbums
-          )
+    let recentAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: nil)
+    let photoAlbums = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: nil)
+
+    recentAlbums.enumerateObjects { collection,_,_ in
+      let assets = PHAsset.fetchAssets(in: collection, options: nil)
+      allAlbums.append(
+        .init(
+          id: collection.localIdentifier,
+          name: "최근 항목",
+          count: assets.count,
+          album: assets
         )
-      }
+      )
+    }
+    
+    photoAlbums.enumerateObjects { collection,_,_ in
+      let assets = PHAsset.fetchAssets(in: collection, options: nil)
+      allAlbums.append(
+        .init(
+          id: collection.localIdentifier,
+          name: collection.localizedTitle ?? "",
+          count: assets.count,
+          album: assets
+        )
+      )
     }
   }
   
   func getPHAssets(album: PHFetchResult<PHAsset>, completion: @escaping ([PHAsset]) -> Void) {
-    guard 0 < album.count else { return }
     var phAssets = [PHAsset]()
     
     album.enumerateObjects { asset, index, stopPointer in

@@ -29,6 +29,26 @@ final class PhotoListViewController: UIViewController {
     return collectionView
   }()
   
+  private lazy var rightBarButtonItem: UIBarButtonItem = {
+    let button = UIBarButtonItem()
+    button.image = UIImage(systemName: "ellipsis.circle")
+    button.target = self
+    button.action = #selector(selectPhotoLibrary)
+    button.tintColor = .label
+    button.imageInsets.right = -10
+    return button
+  }()
+  
+  private lazy var kpDatePickerBottomSheet: PhotoPickerBottomSheet = {
+    let kpDatePickerBottomSheet = PhotoPickerBottomSheet(albums: self.albums)
+    kpDatePickerBottomSheet.modalPresentationStyle = .overFullScreen
+    kpDatePickerBottomSheet.pickerValueChange = {
+      self.lastIndex = $0
+      self.fetch($0)
+    }
+    return kpDatePickerBottomSheet
+  }()
+  
   // MARK: - Properties
   
   private struct Const {
@@ -46,12 +66,22 @@ final class PhotoListViewController: UIViewController {
     }
   }
   
+  private var albums: [AlbumInfo] = [] {
+    didSet {
+      DispatchQueue.main.async {
+        self.title = "\(self.albums[self.lastIndex].name) (\(self.albums[self.lastIndex].count))"
+      }
+    }
+  }
+  
+  private var lastIndex = 0
+  
   // MARK: - ViewLifeCycles
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
-      status == .authorized ? self.fetch() : self.alert()
+      status == .authorized ? self.fetch(self.lastIndex) : self.alert()
     }
   }
   
@@ -68,7 +98,7 @@ extension PhotoListViewController {
   // MARK: - Methods
   
   private func setupViews() {
-    title = "Photo List"
+    navigationItem.rightBarButtonItem = rightBarButtonItem
     view.backgroundColor = .systemBackground
     view.addSubview(collecitonView)
     PhotoService.shared.delegate = self
@@ -80,11 +110,10 @@ extension PhotoListViewController {
     }
   }
   
-  private func fetch() {
+  private func fetch(_ index: Int) {
     PhotoService.shared.getAlbums(mediaType: .image, completion: { [weak self] albums in
-      PhotoService.shared.getPHAssets(album: albums[0].album) {
-        self?.phAssets = $0.reversed()
-      }
+      self?.albums = albums
+      PhotoService.shared.getPHAssets(album: albums[index].album) { self?.phAssets = $0.reversed() }
     })
   }
   
@@ -104,13 +133,18 @@ extension PhotoListViewController {
     }
   }
   
+  @objc
+  private func selectPhotoLibrary() {
+    self.present(kpDatePickerBottomSheet, animated: true)
+  }
+  
 }
 
 // MARK: - PHPhotoLibraryChangeObserver
 
 extension PhotoListViewController: PHPhotoLibraryChangeObserver {
   func photoLibraryDidChange(_ changeInstance: PHChange) {
-    fetch()
+    fetch(lastIndex)
   }
 }
 
@@ -132,11 +166,15 @@ extension PhotoListViewController: UICollectionViewDelegate {
 extension PhotoListViewController: UICollectionViewDataSource {
   
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    guard phAssets.count > 0 else {
+      collectionView.setEmptyMessage("해당 앨범에 사진이 없습니다.")
+      return 0
+    }
+    collectionView.backgroundView = nil
     return phAssets.count
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    //    guard phAssets.isEmpty == false else { return UICollectionViewCell() }
     guard phAssets.count > 0 else { return UICollectionViewCell() }
     
     let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: GridCell.self)
