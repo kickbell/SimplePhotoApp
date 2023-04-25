@@ -31,6 +31,7 @@ class PhotoEditerViewController: UIViewController {
     imageView.image = selectedImage
     imageView.isUserInteractionEnabled = true
     imageView.addGestureRecognizer(hiddenGesture)
+    imageView.clipsToBounds = true
     return imageView
   }()
   

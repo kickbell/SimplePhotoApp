@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A83083DD29F78E0A00FF8D33 /* PhotoPickerBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83083DC29F78E0A00FF8D33 /* PhotoPickerBottomSheet.swift */; };
 		A83E1F7229E715D1008F0E2C /* GridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83E1F7129E715D1008F0E2C /* GridCell.swift */; };
 		A83E1F7529E7CC54008F0E2C /* PhotoEditerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83E1F7429E7CC54008F0E2C /* PhotoEditerViewController.swift */; };
 		A83E1F7729E7D782008F0E2C /* GraphicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83E1F7629E7D782008F0E2C /* GraphicViewController.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A83083DC29F78E0A00FF8D33 /* PhotoPickerBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerBottomSheet.swift; sourceTree = "<group>"; };
 		A83E1F7129E715D1008F0E2C /* GridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCell.swift; sourceTree = "<group>"; };
 		A83E1F7429E7CC54008F0E2C /* PhotoEditerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoEditerViewController.swift; sourceTree = "<group>"; };
 		A83E1F7629E7D782008F0E2C /* GraphicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphicViewController.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				A8DDC77329E6A03E000391C9 /* PhotoListViewController.swift */,
+				A83083DC29F78E0A00FF8D33 /* PhotoPickerBottomSheet.swift */,
 			);
 			path = PhotoList;
 			sourceTree = "<group>";
@@ -287,6 +290,7 @@
 				A83E1F9129E8BD82008F0E2C /* UIView+Utils.swift in Sources */,
 				A83E1F7929E88307008F0E2C /* PhotoService.swift in Sources */,
 				A83E1F8929E888B8008F0E2C /* PhotoCoordinator.swift in Sources */,
+				A83083DD29F78E0A00FF8D33 /* PhotoPickerBottomSheet.swift in Sources */,
 				A83E1F7B29E88345008F0E2C /* AlbumInfo.swift in Sources */,
 				A83E1F8729E888AA008F0E2C /* Coordinator.swift in Sources */,
 			);
@@ -433,7 +437,9 @@
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "사진 앨범 사용권한이 필요합니다. ";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -460,7 +466,9 @@
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "사진 앨범 사용권한이 필요합니다. ";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
