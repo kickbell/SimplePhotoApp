@@ -71,6 +71,7 @@ extension PhotoListViewController {
     title = "Photo List"
     view.backgroundColor = .systemBackground
     view.addSubview(collecitonView)
+    PhotoService.shared.delegate = self
   }
   
   private func updateUI() {
@@ -82,7 +83,7 @@ extension PhotoListViewController {
   private func fetch() {
     PhotoService.shared.getAlbums(mediaType: .image, completion: { [weak self] albums in
       PhotoService.shared.getPHAssets(album: albums[0].album) {
-        self?.phAssets = $0
+        self?.phAssets = $0.reversed()
       }
     })
   }
@@ -103,6 +104,14 @@ extension PhotoListViewController {
     }
   }
   
+}
+
+// MARK: - PHPhotoLibraryChangeObserver
+
+extension PhotoListViewController: PHPhotoLibraryChangeObserver {
+  func photoLibraryDidChange(_ changeInstance: PHChange) {
+    fetch()
+  }
 }
 
 // MARK: - CollectionView
